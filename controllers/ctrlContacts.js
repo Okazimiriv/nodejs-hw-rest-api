@@ -2,20 +2,11 @@ const contacts = require("../models/contacts");
 
 const { HttpError, ctrlWrapper } = require("../helpers");
 
-const Joi = require("joi");
-
-const addSchema = Joi.object({
-  name: Joi.string().required().error(new Error("missing required name field")),
-  email: Joi.string()
-    .required()
-    .error(new Error("missing required email field")),
-  phone: Joi.string()
-    .required()
-    .error(new Error("missing required phone field")),
-});
-
 const getAll = async (req, res) => {
   const result = await contacts.listContacts();
+  if (!result) {
+    throw HttpError(404, "Not found");
+  }
   res.json(result);
 };
 
@@ -24,22 +15,15 @@ const getById = async (req, res) => {
   const { id } = req.params;
   const result = await contacts.getContactById(id);
   if (!result) {
-    return res.status(404).json({
-      message: "Not found",
-    });
+    // return res.status(404).json({
+    //   message: "Not found",
+    // });
+    throw HttpError(404, "Not found");
   }
   res.json(result);
 };
 
 const add = async (req, res) => {
-  const { error } = addSchema.validate(req.body);
-  if (error) {
-    res.status(400);
-    res.json({
-      message: error.message,
-    });
-    return;
-  }
   const result = await contacts.addContact(req.body);
   res.status(201).json(result);
 };
@@ -48,33 +32,21 @@ const deleteById = async (req, res) => {
   const { id } = req.params;
   const result = await contacts.removeContact(id);
   if (!result) {
-    // throw HttpError(404, "Not found id");
-    return res.status(404).json({
-      message: "Not found",
-    });
+    throw HttpError(404, "Not found id");
   }
   // res.json(result);
-  res.json({
+  res.status(200).json({
     message: "contact deleted",
   });
 };
 
 const updateById = async (req, res) => {
-  const { error } = addSchema.validate(req.body);
-  if (error) {
-    return res.status(400).json({
-      message: "missing fields",
-    });
-  }
   const { id } = req.params;
   const result = await contacts.updateContact(id, req.body);
   if (!result) {
-    res.status(404);
-    res.json({
-      message: "Not found",
-    });
+    throw HttpError(404, "Not found id");
   }
-  res.json(result);
+  res.status(200).json(result);
 };
 
 module.exports = {

@@ -30,9 +30,9 @@ const removeContact = async (id) => {
 
 // Повертає об'єкт доданого контакту.
 const addContact = async (body) => {
-  const { name, email, phone } = body;
+  // const { name, email, phone } = body;
   const contacts = await listContacts();
-  const newContact = { id: nanoid(), name, email, phone };
+  const newContact = { id: nanoid(), ...body };
   contacts.push(newContact);
   await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
   return newContact;
