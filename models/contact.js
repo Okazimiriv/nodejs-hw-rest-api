@@ -44,21 +44,26 @@ const contactSchema = new Schema(
     name: {
       type: String,
       minlength: [2, "Minimal 2 symbols required for Name"],
-      required: [true, "Name is required field"],
+      required: [true, "Name is required"],
     },
     email: {
       type: String,
       match: [emailRegexp, "must be in format text@text.domain"],
-      required: [true, "Email is required field"],
+      required: [true, "Email is required"],
     },
     phone: {
       type: String,
       match: [phoneRegexp, "must be in format (xxx) xxx-xxxx"],
-      required: [true, "Phone is required field"],
+      required: [true, "Phone is required"],
     },
     favorite: {
       type: Boolean,
       default: false,
+    },
+    owner: {
+      type: Schema.Types.ObjectId,
+      ref: "user",
+      required: [true, "Owner is required"],
     },
   },
   { versionKey: false, timestamps: true }
