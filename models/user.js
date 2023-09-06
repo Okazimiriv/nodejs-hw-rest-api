@@ -31,6 +31,15 @@ const userShema = new Schema(
       type: String,
       required: true,
     },
+    verify: {
+      type: Boolean,
+      default: false,
+    },
+    verificationToken: {
+      type: String,
+      // default: "",
+      required: [true, "Verify token is required"],
+    },
   },
   { versionKey: false, timestamps: true }
 );
@@ -41,13 +50,14 @@ const registerShema = Joi.object({
   email: Joi.string()
     .email({
       minDomainSegments: 2,
-      tlds: { allow: ["com", "net"] },
+      tlds: { allow: ["com", "net", "ua"] },
     })
     .required()
     .messages({
       "string.base": "email should be a type of 'text'",
       "string.empty": "email cannot be an empty field",
-      "string.email": "email must be in format text@text.com or text@text.net",
+      "string.email":
+        "email must be in format text@text.com, text@text.ua or text@text.net",
       "any.required": "missing required email field",
     }),
   password: Joi.string().min(6).max(20).required().messages({
@@ -57,6 +67,22 @@ const registerShema = Joi.object({
     "string.min": `password should have min {#limit} symbols`,
     "string.max": `password should have max {#limit} symbols`,
   }),
+});
+
+const emailShema = Joi.object({
+  email: Joi.string()
+    .email({
+      minDomainSegments: 2,
+      tlds: { allow: ["com", "net", "ua"] },
+    })
+    .required()
+    .messages({
+      "string.base": "email should be a type of 'text'",
+      "string.empty": "email cannot be an empty field",
+      "string.email":
+        "email must be in format text@text.com, text@text.ua or text@text.net",
+      "any.required": "missing required field email",
+    }),
 });
 
 const loginShema = Joi.object({
@@ -83,6 +109,7 @@ const loginShema = Joi.object({
 
 const schemas = {
   registerShema,
+  emailShema,
   loginShema,
 };
 
